@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+    namespace="com.forum.dao.PBReply2Dao">
+
+    <!-- 대댓글 조회 -->
+    <select id="rprlist" parameterType="map"
+        resultType="com.forum.dto.PBReply2DTO">
+        select rprid, parentPrid, pid, rprwriter, rprcontent, rpregDate
+        from
+        picture_reply2
+        where pid = #{pid} and parentPrid = #{parentPrid}
+        ORDER BY RPRREGDATE
+    </select>
+
+    <!-- 대댓글 작성 -->
+    <insert id="rprwrite"
+        parameterType="com.forum.dto.PBReply2DTO">
+        insert into picture_reply2(rprid, parentPrid, pid, rprwriter,
+        rprcontent, rpregDate)
+        values(picture_reply2_seq.NEXTVAL, #{parentPrid}, #{pid},
+        #{rprwriter}, #{rprcontent},
+        SYSDATE)
+    </insert>
+
+    <!-- 대댓글 삭제 -->
+    <delete id="rprdelete"
+        parameterType="com.forum.dto.PBReply2DTO">
+        delete from picture_reply2
+        where rprid = #{rprid}
+        and pid = #{pid}
+    </delete>
+
+</mapper>

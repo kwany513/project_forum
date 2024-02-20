@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.forum.dao.PBReplyDao">
+
+	<!-- 댓글 조회 -->
+	<select id="prlist" parameterType="int"
+		resultType="com.forum.dto.PBReplyDTO">
+		select prid, pid, prwriter, prcontent, pregDate
+		from
+		picture_reply
+		where pid = #{pid}
+		ORDER BY PREGDATE
+	</select>
+	
+	<!-- 대댓글 목록 쿼리 -->
+    <select id="rprlist" parameterType="map" resultType="com.forum.dto.PBReply2DTO">
+        SELECT rprid, parentPrid, pid, rprwriter, rprcontent, rpregDate
+        FROM picture_reply2
+        WHERE pid = #{pid} AND parentPrid = #{parentPrid}
+        ORDER BY RPREGDATE
+    </select>
+
+	<!-- 댓글 작성 -->
+	<insert id="prwrite"
+		parameterType="com.forum.dto.PBReplyDTO">
+		insert into picture_reply(prid, pid, prwriter,
+		prcontent, pregDate)
+		values(picture_reply_seq.NEXTVAL, #{pid},
+		#{prwriter}, #{prcontent},
+		SYSDATE)
+	</insert>
+
+	<!-- 댓글 수정 -->
+<!-- 	<update id="prmodify" -->
+<!-- 		parameterType="com.green.teamproject_groupware.dto.PBReplyDTO"> -->
+<!-- 		update picture_reply set -->
+<!-- 		prwriter = #{prwriter}, -->
+<!-- 		prcontent = #{prcontent} -->
+<!-- 		where prid = #{prid} -->
+<!-- 		and pid = #{pid} -->
+<!-- 	</update> -->
+
+	<!-- 댓글 삭제 -->
+	<delete id="prdelete"
+		parameterType="com.forum.dto.PBReplyDTO">
+		delete from picture_reply
+		where prid = #{prid}
+		and pid =
+		#{pid}
+	</delete>
+
+</mapper>

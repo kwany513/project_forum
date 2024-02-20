@@ -1,0 +1,81 @@
+CREATE TABLE picture_board(
+    pid number(4) primary key,
+    ptitle varchar2(100),
+    pname varchar2(20),
+    pcontent varchar2(300),
+    pdate date default sysdate,
+    phit number(4) default 0,
+    pempno number default 0
+);
+
+CREATE SEQUENCE picture_board_SEQ
+  START WITH 1
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;
+
+CREATE TABLE picture_reply (
+    prid NUMBER(4,0) NOT NULL,
+    pid NUMBER(4,0) NOT NULL,
+    prwriter VARCHAR2(30) NOT NULL,
+    prcontent VARCHAR2(100) NOT NULL,
+    pregdate DATE DEFAULT SYSDATE,
+    PRIMARY KEY (prid, pid),
+    FOREIGN KEY (pid) REFERENCES picture_board(pid) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE picture_reply_seq
+  START WITH 1
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;
+  
+  CREATE TABLE picture_reply2 (
+    rprid NUMBER(4,0) NOT NULL,
+    parentprid NUMBER(4,0) NOT NULL,
+    pid NUMBER(4,0) NOT NULL,
+    rprwriter VARCHAR2(30) NOT NULL,
+    rprcontent VARCHAR2(100) NOT NULL,
+    rpregdate DATE DEFAULT SYSDATE,
+    PRIMARY KEY (rprid, parentprid, pid),
+    FOREIGN KEY (parentprid, pid) REFERENCES picture_reply(prid, pid) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE picture_reply2_seq
+  START WITH 1
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;
+  
+  CREATE TABLE reply (
+    rid NUMBER(4,0) NOT NULL,
+    bid NUMBER(4,0) NOT NULL,
+    rwriter VARCHAR2(30) NOT NULL,
+    rcontent VARCHAR2(100) NOT NULL,
+    regdate DATE DEFAULT SYSDATE,
+    PRIMARY KEY (rid, bid),
+    FOREIGN KEY (bid) REFERENCES free_board(bid) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE reply_seq
+  START WITH 1
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;
+  
+  CREATE TABLE reply2 (
+    rrid NUMBER(4,0) NOT NULL,
+    parentrid NUMBER(4,0) NOT NULL,
+    bid NUMBER(4,0) NOT NULL,
+    rrwriter VARCHAR2(30) NOT NULL,
+    rrcontent VARCHAR2(100) NOT NULL,
+    rregdate DATE DEFAULT SYSDATE,
+    PRIMARY KEY (rrid, parentrid, bid),
+    FOREIGN KEY (parentrid, bid) REFERENCES reply(rid, bid) ON DELETE CASCADE
+);
+
+CREATE SEQUENCE reply2_seq
+  START WITH 1
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;

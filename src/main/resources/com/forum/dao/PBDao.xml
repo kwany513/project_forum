@@ -1,0 +1,143 @@
+<!-- PBDao.xml -->
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.forum.dao.PBDao">
+
+	<sql id="criteria3">
+		<if test='ptype == "T"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "C"'>
+			(pcontent LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "W"'>
+			(pname LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "TC"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%' OR pcontent LIKE
+			'%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "TW"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%' OR pname LIKE '%'||
+			#{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "TCW"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%' OR pcontent LIKE
+			'%'|| #{pkeyword} ||'%' OR pname LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+	</sql>
+
+	<select id="picture_list" resultType="com.forum.dto.PBDto">
+		select pid
+				  , pname
+				  , ptitle
+				  , pcontent
+				  , pdate
+				  , phit 
+				    from picture_board
+					order by pid desc
+	</select>
+
+	<update id="pincreaseHit" parameterType="java.util.HashMap">
+		UPDATE picture_board
+		SET
+		phit = phit + 1
+		WHERE pid = #{pid}
+	</update>
+
+	<insert id="pwrite" parameterType="java.util.Map">
+		INSERT INTO picture_board
+		(pid, pname, ptitle, pcontent, phit, filename,
+		uploadpath)
+		VALUES
+		(picture_board_SEQ.NEXTVAL, #{pname}, #{ptitle}, #{pcontent}, 0,
+		#{filename}, #{uploadpath})
+	</insert>
+
+<select id="plistWithPaging" resultType="com.forum.dto.PBDto">
+  <![CDATA[
+    SELECT pid, pname, ptitle, pcontent, pdate, phit ,uploadpath
+    FROM (
+      SELECT rownum rn, pid, pname, ptitle, pcontent, pdate, phit ,uploadpath
+      FROM picture_board
+      WHERE
+  ]]>
+  <include refid="criteria3"></include>
+  <![CDATA[
+      rownum <= (#{ppageNum} * #{pamount})
+      ORDER BY pdate DESC
+    )
+    WHERE rn > (#{ppageNum}-1) * #{pamount}
+  ]]>
+</select>
+
+
+
+
+<!-- 	<select id="plistWithPaging" resultType="com.forum.dto.PBDto"> -->
+<!-- <![CDATA[ -->
+<!-- 			SELECT pid, pname, ptitle, pcontent, pdate, phit ,uploadpath -->
+<!-- 			  FROM (SELECT rownum rn, pid, pname, ptitle, pcontent, pdate, phit ,uploadpath -->
+<!-- 					  FROM picture_board -->
+<!-- 					 WHERE  -->
+<!-- 					  ]]> -->
+<!-- 		<include refid="criteria3"></include> -->
+<!-- 					  <![CDATA[ -->
+<!-- 					 		rownum <= (#{ppageNum} * #{pamount}) -->
+<!-- 					 ORDER BY pdate DESC -->
+<!-- 					 ) -->
+<!-- 			 WHERE rn > (#{ppageNum}-1) * #{pamount} -->
+<!-- 		 ]]> -->
+<!-- 	</select> -->
+
+	<select id="pcontentView"
+		resultType="com.forum.dto.PBDto">
+		select pid, pname, ptitle, pcontent, pdate, phit, pempno,
+		filename,
+		uploadpath from picture_board where pid=#{pid}
+	</select>
+
+	<update id="pmodify">
+		update picture_board set pname=#{pname,jdbcType=VARCHAR},
+		ptitle=#{ptitle,jdbcType=VARCHAR},
+		pcontent=#{pcontent,jdbcType=VARCHAR},
+		filename=#{filename,jdbcType=VARCHAR},
+		uploadpath=#{uploadpath,jdbcType=VARCHAR} where
+		pid=#{pid,jdbcType=INTEGER}
+	</update>
+
+
+	<delete id="pdelete">
+		delete from picture_board where pid=#{pid}
+	</delete>
+
+	<select id="getTotalCount" resultType="int">
+		select count(*) from picture_board
+		where
+		<if test='ptype == "T"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "C"'>
+			(pcontent LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "W"'>
+			(pname LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "TC"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%' OR pcontent LIKE
+			'%'|| #{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "TW"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%' OR pname LIKE '%'||
+			#{pkeyword} ||'%') AND
+		</if>
+		<if test='ptype == "TCW"'>
+			(ptitle LIKE '%'|| #{pkeyword} ||'%' OR pcontent LIKE
+			'%'|| #{pkeyword} ||'%' OR pname LIKE '%'|| #{pkeyword} ||'%') AND
+		</if>
+		1=1
+	</select>
+
+</mapper>
